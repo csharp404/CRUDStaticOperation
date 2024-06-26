@@ -1,0 +1,16 @@
+﻿@model school.Models.StudentModel
+
+
+<form asp-action="edit"  class="form">
+    <label asp-for="Id">Id</label>
+    <input asp-for="Id" class="form-control" value="@Model.Id" />
+    <label asp-for="Name">Name</label>
+    <input asp-for="Name" class="form-control" value="@Model.Name" />
+
+    <label asp-for="Age">Age</label>
+    <input asp-for="Age" class="form-control" value="@Model.Age" />
+    <label asp-for="CourseName">CourseName</label>
+    <input asp-for="CourseName" class="form-control" value="@Model.CourseName" />
+ <br />
+    <input type="submit" class="btn btn-dark" name="name" value="submit" />
+</form>
