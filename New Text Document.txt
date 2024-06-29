@@ -1,0 +1,123 @@
+using Microsoft.AspNetCore.Mvc;
+using school.Models;
+using System.Security.Cryptography.X509Certificates;
+
+namespace school.Controllers
+{
+    public class StudentController : Controller
+    {
+        static List<StudentModel> students = new List<StudentModel>();
+
+        public ActionResult Index()
+        {
+
+
+
+            if (students.Count() == 0)
+            {
+                students.Add(new StudentModel { Id = 1, Name = "test2", Age = 26, CourseName = "Science" });
+                students.Add(new StudentModel { Id = 2, Name = "test2", Age = 26, CourseName = "Science" });
+                students.Add(new StudentModel { Id = 3, Name = "test2", Age = 26, CourseName = "Science" });
+            }
+
+            return View(students);
+
+        }
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Create(StudentModel s)
+        {
+            s.Id = students[students.Count() - 1].Id + 1;
+            students.Add(s);
+            return RedirectToAction("Index");
+
+        }
+
+
+        [HttpGet]
+        public ActionResult edit(int id)
+        {
+            StudentModel student = students.First(s => s.Id == id);
+            return View(student);
+        }
+
+        [HttpPost]
+        public ActionResult edit(StudentModel s)
+        {
+            ModelState.Remove("Id");//remove the id from the validation consideration 
+            if (ModelState.IsValid)
+            {
+                var newStudent = students.Where(x => x.Id == s.Id).FirstOrDefault();
+                if (newStudent != null)
+                {
+                    newStudent.Name = s.Name;
+                    newStudent.Age = s.Age;
+                    newStudent.CourseName = s.CourseName;
+                }
+            }
+            ViewBag.std = students;//used for objects 
+            ViewData["sd"] = students;//
+            //TempData
+
+           //the object newStudent is reference with the students list like a & in c++
+            
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            var newStudent = students.Where(x => x.Id == id).FirstOrDefault();
+            if(newStudent != null)
+            students.Remove(newStudent);
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            StudentModel student = students.First(m=>m.Id == id);
+            return View(student);
+        }
+
+
+
+
+
+    }
+}
+--------------------------------------------------------------------
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography.X509Certificates;
+
+namespace school.Models
+{
+    [Table(name: "stds")]
+
+    public class StudentModel
+    {
+        [Display(Name = "StudentID")]//view
+        [Required]//view
+        [Key]
+        [StringLength(50)]//view prevent the user to write more than 50
+        [MinLength(1)]
+        [MaxLength(255)]
+        [DataType("int")]
+        [Range(0, 255)]
+        [Column(TypeName = "nvarchar(50)")]
+        [AllowNull]//db
+        [NotNull]//db
+        [NotMapped]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public string CourseName { get; set; }
+    }
+}
